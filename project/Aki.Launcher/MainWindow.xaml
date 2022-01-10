@@ -1,0 +1,99 @@
+﻿<!-- MainWindow.xaml
+License: NCSA Open Source License
+
+Copyright: Merijn Hendriks
+AUTHORS:
+waffle.lord
+Merijn Hendriks
+-->
+    <Window x:Class="Aki.Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cvt="clr-namespace:Aki.Launcher.Converters"
+        xmlns:helpers="clr-namespace:Aki.Launcher.Helpers;assembly=Aki.Launcher.Base"
+        xmlns:cc="clr-namespace:Aki.Launcher.Custom_Controls"
+        xmlns:local="clr-namespace:Aki.Launcher"
+        mc:Ignorable="d"
+        Title="SPT AKI" Height="470" Width="820" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResize" x:Name="main"
+        Background="{StaticResource AKI_Background_Light}">
+
+    <Window.Resources>
+        <cvt:InvertedBooleanToVisibilityConverter x:Key="IvtBoolToVisibiilty" />
+        <cvt:ImageSourceConverter x:Key="ImgSrcCvt" />
+    </Window.Resources>
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="0" GlassFrameThickness="0 0 0 5" UseAeroCaptionButtons="False"
+                      ResizeBorderThickness="5"
+                      />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="AUTO"/>
+            <ColumnDefinition Width="AUTO"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="AUTO"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Settable Background Image - for senko ;) -->
+        <Image Source="{Binding navigationViewModel.BackgroundImage, RelativeSource={
+                                RelativeSource AncestorType=Window},
+                                Converter={StaticResource ImgSrcCvt}}"
+               RenderOptions.BitmapScalingMode="Fant" Stretch="UniformToFill"
+               Width="{Binding ActualWidth, ElementName=main}"
+               Grid.ColumnSpan="3" Grid.Row="1"
+               />
+        
+        <!-- Main Navigation View Container -->
+        <DockPanel LastChildFill="True" Grid.Row="1" Grid.ColumnSpan="3">
+            <ContentControl DockPanel.Dock="Right" 
+                            Content="{Binding navigationViewModel.SelectedViewModel, 
+                                              RelativeSource={
+                                              RelativeSource AncestorType=Window}}"
+                            IsTabStop="False"
+                            />
+        </DockPanel>
+
+        <!-- Navigation Tool Bar -->
+        <cc:MenuBarControl Grid.ColumnSpan="3"
+            MouseDown="WindowMove_MouseDown"
+            ItemCollection="{Binding MenuItemCollection, RelativeSource={
+                                     RelativeSource AncestorType=Window}}"
+            ItemCollectionCommand="{Binding MenuItemCommand, RelativeSource={
+                                            RelativeSource AncestorType=Window}}"
+            Background="{StaticResource AKI_Background_Dark}"
+            />
+
+        <!-- App buttons (close and minimize) -->
+        <Button Grid.Column="1" Content="&#xE949;" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Style="{StaticResource AppButtonStyle}"
+                Command="{Binding MinimizeAppCommand,
+                                  RelativeSource={
+                                  RelativeSource AncestorType=Window}}"
+                />
+
+        <Button Grid.Column="2" Content="&#xE106;" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Style="{StaticResource AppCloseButtonStyle}"
+                Command="{Binding CloseAppCommand,
+                                  RelativeSource={
+                                  RelativeSource AncestorType=Window}}"
+                />
+
+        <!-- Navigation Notification Banner -->
+        <cc:NotificationBanner Grid.Row="1"  Grid.ColumnSpan="3" VerticalAlignment="Top"
+                               NotificationQueue="{Binding navigationViewModel.NotificationQueue, 
+                                                           RelativeSource={
+                                                           RelativeSource AncestorType=Window}}"
+                               />
+
+
+        <cc:DialogHost x:Name="mainDialogHost" Grid.ColumnSpan="3" Grid.Row="1"/>
+    </Grid>
+</Window>

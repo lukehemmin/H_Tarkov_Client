@@ -1,0 +1,133 @@
+<!-- LoginView.xaml
+License: NCSA Open Source License
+
+Copyright: Merijn Hendriks
+AUTHORS:
+waffle.lord
+Merijn Hendriks
+-->
+
+
+<UserControl x:Class="Aki.Launcher.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:Aki.Launcher.Helpers;assembly=Aki.Launcher.Base"
+             xmlns:cc="clr-namespace:Aki.Launcher.Custom_Controls"
+             xmlns:local="clr-namespace:Aki.Launcher.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="view">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="AUTO"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="AUTO"/>
+            <RowDefinition Height="AUTO"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        
+
+        <Grid Grid.Row="1" Grid.Column="1" Style="{StaticResource GridCardStyle}"
+              MinHeight="150" MinWidth="400">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="10"/>
+
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title -->
+            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                   Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                             Path=login}"
+                   />
+
+            <!-- Username Control -->
+            <cc:HintedTextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                              Hint="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                                     Path=username}"
+                              HintColor="LightGray"
+                              Data="{Binding login.Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                              ReturnKeyCommand="{Binding LoginCommand}"
+                              ReturnKeyCommandParameter="{Binding ElementName=view}"
+                              IsEnabled="{Binding Source={x:Static helpers:LauncherSettingsProvider.Instance},
+                                          Path=AllowSettings}"
+                              />
+
+            <!-- Password Control -->
+            <cc:HintedPasswordBox x:Name="passBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+                                  Hint="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                                         Path=password}"
+                                  HintColor="LightGray"
+                                  ReturnKeyCommand="{Binding LoginCommand}"
+                                  ReturnKeyCommandParameter="{Binding ElementName=view}"
+                                  IsEnabled="{Binding Source={x:Static helpers:LauncherSettingsProvider.Instance},
+                                              Path=AllowSettings}"
+                                  />
+
+            <!-- Addtional Controls -->
+            <CheckBox Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                                Path=login_automatically}"
+                      Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+                      VerticalAlignment="Center" FontSize="10"
+                      HorizontalAlignment="Left"
+                      IsChecked="{Binding Source={x:Static helpers:LauncherSettingsProvider.Instance},
+                                  Path=UseAutoLogin}"
+                      />
+
+            <Button Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                          Path=login}" Grid.Row="6" Grid.Column="3"
+                Command="{Binding LoginCommand}"
+                CommandParameter="{Binding ElementName=view}"
+                />
+            
+            
+            
+        </Grid>
+
+        <!-- Lower Card -->
+        <Grid Grid.Row="2" Grid.Column="1" Margin="0 10" Style="{StaticResource GridCardStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="10"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+            <Label Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                Path=need_an_account}" Grid.Row="1" Grid.Column="1"
+                   />
+            <Button Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance},
+                          Path=go_to_register}" 
+                Command="{Binding ShowRegisterCommand}" Grid.Row="1" Grid.Column="3"
+                IsEnabled="{Binding Source={x:Static helpers:LauncherSettingsProvider.Instance},
+                            Path=AllowSettings}"
+                Style="{StaticResource AltButtonStyle}"
+                />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+	  <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aki.ByteBanger\Aki.ByteBanger.csproj" />
+    <ProjectReference Include="..\Aki.Launcher\Aki.Launcher.csproj" />
+  </ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+		<Exec Command="powershell.exe -ExecutionPolicy Unrestricted -File $(SolutionDir)\Aki.Build\build.ps1 -VSBuilt &quot;$(ConfigurationName)&quot;" />
+	</Target>
+
+</Project>
