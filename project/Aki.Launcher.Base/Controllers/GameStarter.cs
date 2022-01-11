@@ -16,7 +16,9 @@ using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Aki.Launcher.Controllers;
 using Aki.Launcher.Interfaces;
 
 namespace Aki.Launcher
@@ -27,16 +29,18 @@ namespace Aki.Launcher
         private readonly bool _showOnly;
         private readonly string _originalGamePath;
         private readonly string _gamePath;
-        
+        private readonly string[] _excludeFromCleanup;
+
         private const string registrySettings = @"Software\Battlestate Games\EscapeFromTarkov";
 
         public GameStarter(IGameStarterFrontend frontend, string gamePath = null, string originalGamePath = null,
-            bool showOnly = false)
+            bool showOnly = false, string[] excludeFromCleanup = null)
         {
             _frontend = frontend;
             _showOnly = showOnly;
             _gamePath = gamePath ?? LauncherSettingsProvider.Instance.GamePath ?? Environment.CurrentDirectory;
             _originalGamePath = originalGamePath ?? LauncherSettingsProvider.Instance.OriginalGamePath;
+            _excludeFromCleanup = excludeFromCleanup ?? LauncherSettingsProvider.Instance.ExcludeFromCleanup;
         }
 
         public async Task<GameStarterResult> LaunchGame(ServerInfo server, AccountInfo account)
@@ -163,19 +167,24 @@ namespace Aki.Launcher
 
         void SetupGameFiles()
         {
-            var files = new string[]
+            var files = new []
             {
-                Path.Combine(_gamePath, "BattlEye"),
-                Path.Combine(_gamePath, "Logs"),
-                Path.Combine(_gamePath, "ConsistencyInfo"),
-                Path.Combine(_gamePath, "EscapeFromTarkov_BE.exe"),
-                Path.Combine(_gamePath, "Uninstall.exe"),
-                Path.Combine(_gamePath, "UnityCrashHandler64.exe"),
-                Path.Combine(_gamePath, "WinPixEventRuntime.dll")
+                GetFileForCleanup("BattlEye"),
+                GetFileForCleanup("Logs"),
+                GetFileForCleanup("ConsistencyInfo"),
+                GetFileForCleanup("EscapeFromTarkov_BE.exe"),
+                GetFileForCleanup("Uninstall.exe"),
+                GetFileForCleanup("UnityCrashHandler64.exe"),
+                GetFileForCleanup("WinPixEventRuntime.dll")
             };
 
             foreach (var file in files)
             {
+                if (file == null)
+                {
+                    continue;
+                }
+
                 if (Directory.Exists(file))
                 {
                     RemoveFilesRecurse(new DirectoryInfo(file));
@@ -186,6 +195,17 @@ namespace Aki.Launcher
                     File.Delete(file);
                 }
             }
+        }
+
+        private string GetFileForCleanup(string fileName)
+        {
+            if (_excludeFromCleanup.Contains(fileName))
+            {
+                LogManager.Instance.Info($"Excluded {fileName} from file cleanup");
+                return null;
+            }
+            
+            return Path.Combine(_gamePath, fileName);
         }
 
         int IsPiratedCopy()
