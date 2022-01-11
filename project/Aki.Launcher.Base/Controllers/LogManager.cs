@@ -23,7 +23,7 @@ namespace Aki.Launcher.Controllers
 
         public LogManager()
         {
-            filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "user", "logs");
         }
 
         public void Write(string text)
@@ -33,8 +33,8 @@ namespace Aki.Launcher.Controllers
                 Directory.CreateDirectory(filepath);
             }
 
-            string filename = Path.Combine(filepath, $"{DateTime.Now:yyyyMMdd}.log");
-            File.AppendAllLines(filename, new[] { $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]{text}" });
+            string filename = Path.Combine(filepath, "launcher.log");
+            File.WriteAllLines(filename, new[] { $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]{text}" });
         }
 
         public void Debug(string text) => Write($"[Debug]{text}");

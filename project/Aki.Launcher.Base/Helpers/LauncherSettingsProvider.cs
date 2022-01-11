@@ -139,7 +139,22 @@ namespace Aki.Launcher.Helpers
                 }
             }
         }
-        
+
+        private string[] _ExcludeFromCleanup;
+
+        public string[] ExcludeFromCleanup
+        {
+            get => _ExcludeFromCleanup ??= Array.Empty<string>();
+            set
+            {
+                if (_ExcludeFromCleanup != value)
+                {
+                    _ExcludeFromCleanup = value;
+                    RaisePropertyChanged(nameof(ExcludeFromCleanup));
+                }
+            }
+        }
+
         private static string DetectOriginalGamePath()
         {
             // We can't detect the installed path on non-Windows
