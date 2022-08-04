@@ -27,8 +27,6 @@ namespace Aki.Launcher.Helpers
 
     public class Settings : INotifyPropertyChanged
     {
-        private const string registryInstall = @"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\EscapeFromTarkov";
-        
         public bool FirstRun { get; set; } = true;
 
         public void SaveSettings()
@@ -125,21 +123,6 @@ namespace Aki.Launcher.Helpers
             }
         }
 
-        private string _OriginalGamePath;
-
-        public string OriginalGamePath
-        {
-            get => _OriginalGamePath ??= DetectOriginalGamePath();
-            set
-            {
-                if (_OriginalGamePath != value)
-                {
-                    _OriginalGamePath = value;
-                    RaisePropertyChanged(nameof(OriginalGamePath));
-                }
-            }
-        }
-
         private string[] _ExcludeFromCleanup;
 
         public string[] ExcludeFromCleanup
@@ -153,18 +136,6 @@ namespace Aki.Launcher.Helpers
                     RaisePropertyChanged(nameof(ExcludeFromCleanup));
                 }
             }
-        }
-
-        private static string DetectOriginalGamePath()
-        {
-            // We can't detect the installed path on non-Windows
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return null;
-
-            var uninstallStringValue = Registry.LocalMachine.OpenSubKey(registryInstall, false)
-                ?.GetValue("UninstallString");
-            var info = (uninstallStringValue is string key) ? new FileInfo(key) : null;
-            return info?.DirectoryName;
         }
 
         public ServerSetting Server { get; set; } = new ServerSetting();

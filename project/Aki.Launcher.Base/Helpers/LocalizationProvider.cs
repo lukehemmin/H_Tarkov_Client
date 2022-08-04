@@ -26,6 +26,8 @@ namespace Aki.Launcher.Helpers
 
         public static Dictionary<string, string> LocaleNameDictionary = GetLocaleDictionary();
 
+        public static event EventHandler LocaleChanged = delegate { };
+
         public static void LoadLocaleFromFile(string localeName)
         {
             string localeRomanName = LocaleNameDictionary.GetKeyByValue(localeName);
@@ -46,6 +48,8 @@ namespace Aki.Launcher.Helpers
 
                 LauncherSettingsProvider.Instance.DefaultLocale = localeRomanName;
                 LauncherSettingsProvider.Instance.SaveSettings();
+
+                LocaleChanged(null, EventArgs.Empty);
             }
 
             //could possibly raise an event here to say why the local wasn't changed.
@@ -99,7 +103,8 @@ namespace Aki.Launcher.Helpers
             englishLocale.register = "Register";
             englishLocale.go_to_register = "Go to Register";
             englishLocale.registration_failed = "Registration Failed.";
-            englishLocale.login = "Login";
+            englishLocale.registration_question_format_1 = "Profile '{0}' does not exist.\n\nWould you like to create it?";
+            englishLocale.login_or_register = "Login / Register";
             englishLocale.go_to_login = "Go to Login";
             englishLocale.login_automatically = "Login Automatically";
             englishLocale.incorrect_login = "Username or password is incorrect";
@@ -134,8 +139,7 @@ namespace Aki.Launcher.Helpers
             englishLocale.on_game_start = "On Game Start";
             englishLocale.game = "Game";
             englishLocale.new_password = "New Password";
-            englishLocale.wipe_warning = "Wiping your profile will reset your game progress. Are you sure you want to wipe your profile?";
-            englishLocale.wipe_warning_format_2 = "Changing your account edition requires a profile wipe.\n'{0}' -> '{1}'\nAre you sure you want to wipe your profile?";
+            englishLocale.wipe_warning = "Changing your account edition requires a profile wipe. This will reset your game prgrogess.";
             englishLocale.cancel = "Cancel";
             englishLocale.need_an_account = "Don't have an account yet?";
             englishLocale.have_an_account = "Already have an account?";
@@ -151,11 +155,21 @@ namespace Aki.Launcher.Helpers
             englishLocale.level = "Level";
             englishLocale.game_path = "Game Path";
             englishLocale.patching = "Patching";
-            englishLocale.nlog_modify_failed = "NLog could not be modified";
             englishLocale.file_mismatch_dialog_message = "The input file hash doesn't match the expected hash. You may be using the wrong version\nof AKI for your client files.\n\nDo you want to continue?";
             englishLocale.yes = "Yes";
             englishLocale.no = "No";
             englishLocale.open_folder = "Open Folder";
+            englishLocale.select_edition = "Select Edition";
+            englishLocale.profile_created = "Profile Created";
+            englishLocale.next_level_in = "Next level in";
+            englishLocale.copied = "Copied";
+            englishLocale.no_profile_data = "No profile data";
+            englishLocale.profile_version_mismath = "Your profile was made using a different version of aki and may have issues";
+            englishLocale.profile_removed = "Profile removed";
+            englishLocale.profile_removal_failed = "Failed to remove profile";
+            englishLocale.profile_remove_question_format_1 = "Permanently remove profile '{0}'?";
+            englishLocale.i_understand = "I Understand";
+            englishLocale.game_version_mismatch_format_2 = "H-Tarkov is unable to run, this is because H-Tarkov expected to find EFT version '{1}',\nbut instead found version '{0}'\n\nEnsure you've downgraded your EFT as described in the install guide\non the page you downloaded H-Tarkov from";
             #endregion
 
             Directory.CreateDirectory(LocalizationProvider.DefaultLocaleFolderPath);
@@ -416,17 +430,17 @@ namespace Aki.Launcher.Helpers
         }
         #endregion
 
-        #region login
-        private string _login;
-        public string login
+        #region login_or_register
+        private string _login_or_register;
+        public string login_or_register
         {
-            get => _login;
+            get => _login_or_register;
             set
             {
-                if (_login != value)
+                if (_login_or_register != value)
                 {
-                    _login = value;
-                    RaisePropertyChanged(nameof(login));
+                    _login_or_register = value;
+                    RaisePropertyChanged(nameof(login_or_register));
                 }
             }
         }
@@ -896,6 +910,22 @@ namespace Aki.Launcher.Helpers
         }
         #endregion
 
+        #region registration_question_format_1
+        private string _registration_question_format_1;
+        public string registration_question_format_1
+        {
+            get => _registration_question_format_1;
+            set
+            {
+                if(_registration_question_format_1 != value)
+                {
+                    _registration_question_format_1 = value;
+                    RaisePropertyChanged(nameof(registration_question_format_1));
+                }
+            }
+        }
+        #endregion
+
         #region minimize_action
         private string _minimize_action;
         public string minimize_action
@@ -1003,22 +1033,6 @@ namespace Aki.Launcher.Helpers
                 {
                     _wipe_warning = value;
                     RaisePropertyChanged(nameof(wipe_warning));
-                }
-            }
-        }
-        #endregion
-
-        #region wipe_warning_format_2
-        private string _wipe_warning_format_1;
-        public string wipe_warning_format_2
-        {
-            get => _wipe_warning_format_1;
-            set
-            {
-                if (_wipe_warning_format_1 != value)
-                {
-                    _wipe_warning_format_1 = value;
-                    RaisePropertyChanged(nameof(wipe_warning_format_2));
                 }
             }
         }
@@ -1248,22 +1262,6 @@ namespace Aki.Launcher.Helpers
         }
         #endregion
 
-        #region nlog_modify_failed
-        private string _nlog_modify_failed;
-        public string nlog_modify_failed
-        {
-            get => _nlog_modify_failed;
-            set
-            {
-                if(_nlog_modify_failed != value)
-                {
-                    _nlog_modify_failed = value;
-                    RaisePropertyChanged(nameof(nlog_modify_failed));
-                }
-            }
-        }
-        #endregion
-
         #region file_mismatch_dialog_message
         private string _file_mismatch_dialog_message;
         public string file_mismatch_dialog_message
@@ -1312,6 +1310,22 @@ namespace Aki.Launcher.Helpers
         }
         #endregion
 
+        #region profile_created
+        private string _profile_created;
+        public string profile_created
+        {
+            get => _profile_created;
+            set
+            {
+                if(_profile_created != value)
+                {
+                    _profile_created = value;
+                    RaisePropertyChanged(nameof(profile_created));
+                }
+            }
+        }
+        #endregion
+
         #region open_folder
         private string _open_folder;
         public string open_folder
@@ -1323,6 +1337,166 @@ namespace Aki.Launcher.Helpers
                 {
                     _open_folder = value;
                     RaisePropertyChanged(nameof(open_folder));
+                }
+            }
+        }
+        #endregion
+
+        #region select_edition
+        private string _select_edition;
+        public string select_edition
+        {
+            get => _select_edition;
+            set
+            {
+                if(_select_edition != value)
+                {
+                    _select_edition = value;
+                    RaisePropertyChanged(nameof(select_edition));
+                }
+            }
+        }
+        #endregion
+
+        #region copied
+        private string _copied;
+        public string copied
+        {
+            get => _copied;
+            set
+            {
+                if(_copied != value)
+                {
+                    _copied = value;
+                    RaisePropertyChanged(nameof(copied));
+                }
+            }
+        }
+        #endregion
+
+        #region next_level_in
+        private string _next_level_in;
+        public string next_level_in
+        {
+            get => _next_level_in;
+            set
+            {
+                if(_next_level_in != value)
+                {
+                    _next_level_in = value;
+                    RaisePropertyChanged(nameof(next_level_in));
+                }
+            }
+        }
+        #endregion
+
+        #region no_profile_data
+        private string _no_profile_data;
+        public string no_profile_data
+        {
+            get => _no_profile_data;
+            set
+            {
+                if (_no_profile_data != value)
+                {
+                    _no_profile_data = value;
+                    RaisePropertyChanged(nameof(no_profile_data));
+                }
+            }
+        }
+        #endregion
+
+        #region profile_version_mismatch
+        private string _profile_version_mismath;
+        public string profile_version_mismath
+        {
+            get => _profile_version_mismath;
+            set
+            {
+                if(_profile_version_mismath != value)
+                {
+                    _profile_version_mismath = value;
+                    RaisePropertyChanged(nameof(profile_version_mismath));
+                }
+            }
+        }
+        #endregion
+
+        #region profile_removed
+        private string _profile_removed;
+        public string profile_removed
+        {
+            get => _profile_removed;
+            set
+            {
+                if(_profile_removed != value)
+                {
+                    _profile_removed = value;
+                    RaisePropertyChanged(nameof(profile_removed));
+                }
+            }
+        }
+        #endregion
+
+        #region profile_removal_failed
+        private string _profile_removal_failed;
+        public string profile_removal_failed
+        {
+            get => _profile_removal_failed;
+            set
+            {
+                if(_profile_removal_failed != value)
+                {
+                    _profile_removal_failed = value;
+                    RaisePropertyChanged(nameof(profile_removal_failed));
+                }
+            }
+        }
+        #endregion
+
+        #region profile_remove_question_format_1
+        private string _profile_remove_question_format_1;
+        public string profile_remove_question_format_1
+        {
+            get => _profile_remove_question_format_1;
+            set
+            {
+                if(_profile_remove_question_format_1 != value)
+                {
+                    _profile_remove_question_format_1 = value;
+                    RaisePropertyChanged(nameof(profile_remove_question_format_1));
+                }
+            }
+        }
+        #endregion
+
+        #region i_understand
+        private string _i_understand;
+        public string i_understand
+        {
+            get => _i_understand;
+            set
+            {
+                if(_i_understand != value)
+                {
+                    _i_understand = value;
+                    RaisePropertyChanged(nameof(i_understand));
+                }
+            }
+        }
+        #endregion
+
+        #region game_version_mismatch_format_2
+        private string _game_version_mismatch_format_2;
+        public string game_version_mismatch_format_2
+        {
+            get => _game_version_mismatch_format_2;
+            set
+            {
+                if(_game_version_mismatch_format_2 != value)
+                {
+                    _game_version_mismatch_format_2 = value;
+                    RaisePropertyChanged(nameof(game_version_mismatch_format_2));
                 }
             }
         }

@@ -6,10 +6,10 @@
  * waffle.lord
  */
 
+using Aki.Launcher.Controllers;
 using Aki.Launcher.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 
 namespace Aki.Launcher.MiniCommon
@@ -34,26 +34,33 @@ namespace Aki.Launcher.MiniCommon
 
         private static void CacheImage(string route, string filePath)
         {
-            Directory.CreateDirectory(ImageCacheFolder);
-
-            if (String.IsNullOrWhiteSpace(route) || CachedRoutes.Contains(route)) //Don't want to request the image if it was already cached this session.
+            try
             {
-                return;
+                Directory.CreateDirectory(ImageCacheFolder);
+
+                if (String.IsNullOrWhiteSpace(route) || CachedRoutes.Contains(route)) //Don't want to request the image if it was already cached this session.
+                {
+                    return;
+                }
+
+                using Stream s = new Request(null, LauncherSettingsProvider.Instance.Server.Url).Send(route, "GET", null, false);
+
+                using MemoryStream ms = new MemoryStream();
+
+                s.CopyTo(ms);
+
+                if (ms.Length == 0) return;
+
+                using FileStream fs = File.Create(filePath);
+                ms.Seek(0, SeekOrigin.Begin);
+                ms.CopyTo(fs);
+
+                CachedRoutes.Add(route);
             }
-
-            using Stream s = new Request(null, LauncherSettingsProvider.Instance.Server.Url).Send(route, "GET", null, false);
-
-            using MemoryStream ms = new MemoryStream();
-
-            s.CopyTo(ms);
-
-            if (ms.Length == 0) return;
-
-            using FileStream fs = File.Create(filePath);
-            ms.Seek(0, SeekOrigin.Begin);
-            ms.CopyTo(fs);
-
-            CachedRoutes.Add(route);
+            catch (Exception ex)
+            {
+                LogManager.Instance.Exception(ex);
+            }
         }
     }
 }

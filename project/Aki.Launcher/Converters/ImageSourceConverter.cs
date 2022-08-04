@@ -6,15 +6,14 @@
  * waffle.lord
  */
 
+using Aki.Launcher.Controllers;
+using Avalonia.Data.Converters;
+using Avalonia.Media.Imaging;
 using System;
 using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Aki.Launcher.Converters
 {
-    [ValueConversion(typeof(string), typeof(ImageSource))]
     public class ImageSourceConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -25,10 +24,17 @@ namespace Aki.Launcher.Converters
             }
             try
             {
-                ImageSource image = BitmapFrame.Create(new Uri(valueString), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-                return image;
+                if (value is string rawUri && targetType.IsAssignableFrom(typeof(Bitmap)))
+                {
+                    return new Bitmap(rawUri);
+                }
+
+                return null;
             }
-            catch { return null; }
+            catch
+            {
+                return null;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

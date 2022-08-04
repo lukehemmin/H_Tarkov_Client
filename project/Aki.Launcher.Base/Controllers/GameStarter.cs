@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Aki.Launcher.Controllers;
 using Aki.Launcher.Interfaces;
+using System.Runtime.InteropServices;
 
 namespace Aki.Launcher
 {
@@ -30,6 +31,7 @@ namespace Aki.Launcher
         private readonly string _originalGamePath;
         private readonly string _gamePath;
         private readonly string[] _excludeFromCleanup;
+        private const string registryInstall = @"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\EscapeFromTarkov";
 
         private const string registrySettings = @"Software\Battlestate Games\EscapeFromTarkov";
 
@@ -39,8 +41,20 @@ namespace Aki.Launcher
             _frontend = frontend;
             _showOnly = showOnly;
             _gamePath = gamePath ?? LauncherSettingsProvider.Instance.GamePath ?? Environment.CurrentDirectory;
-            _originalGamePath = originalGamePath ?? LauncherSettingsProvider.Instance.OriginalGamePath;
+            _originalGamePath = originalGamePath ??= DetectOriginalGamePath();
             _excludeFromCleanup = excludeFromCleanup ?? LauncherSettingsProvider.Instance.ExcludeFromCleanup;
+        }
+
+        private static string DetectOriginalGamePath()
+        {
+            // We can't detect the installed path on non-Windows
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return null;
+
+            var uninstallStringValue = Registry.LocalMachine.OpenSubKey(registryInstall, false)
+                ?.GetValue("UninstallString");
+            var info = (uninstallStringValue is string key) ? new FileInfo(key) : null;
+            return info?.DirectoryName;
         }
 
         public async Task<GameStarterResult> LaunchGame(ServerInfo server, AccountInfo account)
@@ -48,13 +62,15 @@ namespace Aki.Launcher
             // setup directories
             if (IsInstalledInLive())
             {
+                LogManager.Instance.Warning("Failed installed in live check");
                 return GameStarterResult.FromError(-1);
             }
 
             SetupGameFiles();
 
-            if (IsPiratedCopy() > 1)
+            if (!ValidationUtil.Validate())
             {
+                LogManager.Instance.Warning("Failed validation check");
                 return GameStarterResult.FromError(-2);
             }
 
@@ -64,21 +80,14 @@ namespace Aki.Launcher
                 CleanTempFiles();
             }
 
-            //create nlog.dll.nlog
-            if(!NLogCreator.Create())
-            {
-                return GameStarterResult.FromError(-7);
-            }
-
-
             // check game path
             var clientExecutable = Path.Join(_gamePath, "EscapeFromTarkov.exe");
 
             if (!File.Exists(clientExecutable))
             {
+                LogManager.Instance.Warning($"Could not find {clientExecutable}");
                 return GameStarterResult.FromError(-6);
             }
-
 
             // apply patches
             ProgressReportingPatchRunner patchRunner = new ProgressReportingPatchRunner(_gamePath);
@@ -89,6 +98,7 @@ namespace Aki.Launcher
             }
             catch (TaskCanceledException)
             {
+                LogManager.Instance.Warning("Failed to apply assembly patch");
                 return GameStarterResult.FromError(-4);
             }
             
@@ -117,52 +127,60 @@ namespace Aki.Launcher
 
         bool IsInstalledInLive()
         {
-            var value0 = false;
+            var isInstalledInLive = false;
 
             try
             {
-                var value4 = new FileInfo[]
+                var files = new FileInfo[]
                 {
-                    new FileInfo(Path.Combine(_originalGamePath, @"Launcher.exe")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"Server.exe")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\0Harmony.dll")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\NLog.dll.nlog")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Nlog.Aki.Loader.dll")),
-                };
-                var value5 = new FileInfo[]
-                {
-                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll.bak")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll")),
-                };
-                var value6 = new DirectoryInfo(Path.Combine(_originalGamePath, @"Aki_Data"));
+                    // aki files
+                    new FileInfo(Path.Combine(_originalGamePath, @"Aki.Launcher.exe")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"Aki.Server.exe")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Aki.Build.dll")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Aki.Common.dll")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"EscapeFromTarkov_Data\Managed\Aki.Reflection.dll")),
 
-                foreach (var value in value4)
+                    // bepinex files
+                    new FileInfo(Path.Combine(_originalGamePath, @"doorstep_config.ini")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"winhttp.dll")),
+
+                    // licenses
+                    new FileInfo(Path.Combine(_originalGamePath, @"LICENSE-BEPINEX.txt")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"LICENSE-ConfigurationManager.txt")),                                    
+                    new FileInfo(Path.Combine(_originalGamePath, @"LICENSE-Launcher.txt")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"LICENSE-Modules.txt")),
+                    new FileInfo(Path.Combine(_originalGamePath, @"LICENSE-Server.txt"))
+                };
+                var directories = new DirectoryInfo[]
                 {
-                    if (File.Exists(value.FullName))
+                    new DirectoryInfo(Path.Combine(_originalGamePath, @"Aki_Data")),
+                    new DirectoryInfo(Path.Combine(_originalGamePath, @"BepInEx"))
+                };
+
+                foreach (var file in files)
+                {
+                    if (File.Exists(file.FullName))
                     {
-                        File.Delete(value.FullName);
-                        value0 = true;
+                        File.Delete(file.FullName);
+                        isInstalledInLive = true;
                     }
                 }
 
-                if (File.Exists(value5[0].FullName))
+                foreach (var directory in directories)
                 {
-                    File.Delete(value5[1].FullName);
-                    File.Move(value5[0].FullName, value5[1].FullName);
-                    value0 = true;
-                }
-
-                if (Directory.Exists(value6.FullName))
-                {
-                    RemoveFilesRecurse(value6);
-                    value0 = true;
+                    if (Directory.Exists(directory.FullName))
+                    {
+                        RemoveFilesRecurse(directory);
+                        isInstalledInLive = true;
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                LogManager.Instance.Exception(ex);
             }
 
-            return value0;
+            return isInstalledInLive;
         }
 
         void SetupGameFiles()
@@ -208,37 +226,6 @@ namespace Aki.Launcher
             return Path.Combine(_gamePath, fileName);
         }
 
-        int IsPiratedCopy()
-        {
-            var value0 = 0;
-            
-            try
-            {
-                var value4 = new FileInfo[3]
-                {
-                    new FileInfo(Path.Combine(_originalGamePath, "Uninstall.exe")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"BattlEye", "BEClient_x64.dll")),
-                    new FileInfo(Path.Combine(_originalGamePath, @"BattlEye", "BEService_x64.dll"))
-                };
-
-                value0 = value4.Length;
-
-                foreach (var value in value4)
-                {
-                    if (File.Exists(value.FullName))
-                    {
-                        --value0;
-                    }
-                }
-            }
-            catch
-            {
-                value0 = 5;
-            }
-
-            return value0;
-        }
-
         /// <summary>
         /// Remove the registry keys
         /// </summary>
@@ -254,8 +241,9 @@ namespace Aki.Launcher
                     key.DeleteValue(value);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                LogManager.Instance.Exception(ex);
                 return false;
             }
 
@@ -305,8 +293,9 @@ namespace Aki.Launcher
                 // remove directory
                 basedir.Delete();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogManager.Instance.Exception(ex);
                 return false;
             }
 

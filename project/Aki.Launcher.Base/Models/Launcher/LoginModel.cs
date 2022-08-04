@@ -13,7 +13,7 @@ namespace Aki.Launcher.Models.Launcher
 {
     public class LoginModel : INotifyPropertyChanged
     {
-        private string _Username;
+        private string _Username = "";
         public string Username
         {
             get => _Username;
@@ -27,7 +27,7 @@ namespace Aki.Launcher.Models.Launcher
             }
         }
 
-        private string _Password;
+        private string _Password = "";
         public string Password
         {
             get => _Password;
@@ -39,12 +39,6 @@ namespace Aki.Launcher.Models.Launcher
                     RaisePropertyChanged(nameof(Password));
                 }
             }
-        }
-
-        public LoginModel()
-        {
-            Username = "";
-            Password = "";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

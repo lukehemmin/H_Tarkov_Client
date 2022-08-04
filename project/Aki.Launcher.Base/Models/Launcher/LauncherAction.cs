@@ -7,12 +7,8 @@
  */
 
 
-using Aki.Launcher.Converters;
-using System.ComponentModel;
-
 namespace Aki.Launcher.Models.Launcher
 {
-    [TypeConverter(typeof(EnumToLocaleStringConverter))]
     public enum LauncherAction
     {
         MinimizeAction,

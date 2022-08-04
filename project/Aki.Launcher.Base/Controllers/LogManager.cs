@@ -17,6 +17,7 @@ namespace Aki.Launcher.Controllers
     /// </summary>
     public class LogManager
     {
+        //TODO - update this to use reflection to get the calling method, class, etc 
         private static LogManager _instance;
         public static LogManager Instance => _instance ?? (_instance = new LogManager());
         private string filepath;
@@ -34,7 +35,7 @@ namespace Aki.Launcher.Controllers
             }
 
             string filename = Path.Combine(filepath, "launcher.log");
-            File.WriteAllLines(filename, new[] { $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]{text}" });
+            File.AppendAllLines(filename, new[] { $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]{text}" });
         }
 
         public void Debug(string text) => Write($"[Debug]{text}");
@@ -44,5 +45,7 @@ namespace Aki.Launcher.Controllers
         public void Warning(string text) => Write($"[Warning]{text}");
 
         public void Error(string text) => Write($"[Error]{text}");
+
+        public void Exception(Exception ex) => Write($"[Exception]{ex.Message}\nStacktrace:\n{ex.StackTrace}");
     }
 }

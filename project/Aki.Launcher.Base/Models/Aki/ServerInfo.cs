@@ -18,7 +18,7 @@ namespace Aki.Launcher
         public ServerInfo()
         {
             backendUrl = "http://tarkov.lukehemmin.systems:6969";
-            name = "Local SPT-AKI Server";
+            name = "Local H-Tarkov Server";
             editions = new string[0];
         }
     }

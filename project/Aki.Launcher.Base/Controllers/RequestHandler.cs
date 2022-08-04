@@ -60,6 +60,11 @@ namespace Aki.Launcher
             return request.PostJson("/launcher/profile/info", Json.Serialize(data));
         }
 
+        public static string RequestExistingProfiles()
+        {
+            return request.GetJson("/launcher/profiles");
+        }
+
         public static string RequestChangeUsername(ChangeRequestData data)
         {
             return request.PostJson("/launcher/profile/change/username", Json.Serialize(data));
@@ -73,6 +78,21 @@ namespace Aki.Launcher
         public static string RequestWipe(RegisterRequestData data)
         {
             return request.PostJson("/launcher/profile/change/wipe", Json.Serialize(data));
+        }
+
+        public static string SendPing()
+        {
+            return request.GetJson("/launcher/ping");
+        }
+
+        public static string RequestServerVersion()
+        {
+            return request.GetJson("/launcher/server/version");
+        }
+
+        public static string RequestCompatibleGameVersion()
+        {
+            return request.GetJson("/launcher/profile/compatibleTarkovVersion");
         }
     }
 }

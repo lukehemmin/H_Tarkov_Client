@@ -27,6 +27,20 @@ namespace Aki.Launcher.Models.Launcher
             }
         }
 
+        private bool _ConnectionFailed;
+        public bool ConnectionFailed
+        {
+            get => _ConnectionFailed;
+            set
+            {
+                if(_ConnectionFailed != value)
+                {
+                    _ConnectionFailed = value;
+                    RaisePropertyChanged(nameof(ConnectionFailed));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void RaisePropertyChanged(string property)

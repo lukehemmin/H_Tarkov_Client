@@ -32,18 +32,19 @@ namespace Aki.Launcher.Models.Launcher
                 case -3:
                     Message = LocalizationProvider.Instance.failed_to_receive_patches;
                     break;
+
                 case -4:
                     Message = LocalizationProvider.Instance.failed_core_patch;
                     break;
+
                 case -5:
                     Message = LocalizationProvider.Instance.failed_mod_patch;
                     break;
+
                 case -6:
                     Message = LocalizationProvider.Instance.eft_exe_not_found_warning;
                     break;
-                case -7:
-                    Message = LocalizationProvider.Instance.nlog_modify_failed;
-                    break;
+                    
                 default:
                     Message = LocalizationProvider.Instance.login_failed;
                     break;

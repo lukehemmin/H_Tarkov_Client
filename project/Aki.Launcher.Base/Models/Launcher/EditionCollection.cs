@@ -14,6 +14,19 @@ namespace Aki.Launcher.Models.Launcher
 {
     public class EditionCollection : INotifyPropertyChanged
     {
+        private bool _HasSelection;
+        public bool HasSelection
+        {
+            get => _HasSelection;
+            set
+            {
+                if(_HasSelection != value)
+                {
+                    _HasSelection = value;
+                    RaisePropertyChanged(nameof(HasSelection));
+                }
+            }
+        }
         private int _SelectedEditionIndex;
         public int SelectedEditionIndex
         {
@@ -37,6 +50,7 @@ namespace Aki.Launcher.Models.Launcher
                 if (_SelectedEdition != value)
                 {
                     _SelectedEdition = value;
+                    HasSelection = _SelectedEdition != null;
                     RaisePropertyChanged(nameof(SelectedEdition));
                 }
             }

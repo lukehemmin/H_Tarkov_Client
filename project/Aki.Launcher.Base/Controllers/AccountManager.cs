@@ -16,6 +16,15 @@ using System.Threading.Tasks;
 
 namespace Aki.Launcher
 {
+    public enum AccountStatus
+    {
+        OK = 0,
+        NoConnection = 1,
+        LoginFailed = 2,
+        RegisterFailed = 3,
+        UpdateFailed = 4
+    }
+
     public static class AccountManager
     {
         private const string STATUS_FAILED = "FAILED";
@@ -25,7 +34,7 @@ namespace Aki.Launcher
 
         public static void Logout() => SelectedAccount = null;
 
-        public static async Task<int> LoginAsync(LoginModel Creds)
+        public static async Task<AccountStatus> LoginAsync(LoginModel Creds)
         {
             return await Task.Run(() =>
             {
@@ -33,7 +42,7 @@ namespace Aki.Launcher
             });
         }
 
-        public static async Task<int> LoginAsync(string username, string password)
+        public static async Task<AccountStatus> LoginAsync(string username, string password)
         {
             return await Task.Run(() =>
             {
@@ -41,7 +50,7 @@ namespace Aki.Launcher
             });
         }
 
-        public static int Login(string username, string password)
+        public static AccountStatus Login(string username, string password)
         {
             LoginRequestData data = new LoginRequestData(username, password);
             string id = STATUS_FAILED;
@@ -53,14 +62,14 @@ namespace Aki.Launcher
 
                 if (id == STATUS_FAILED)
                 {
-                    return -1;
+                    return AccountStatus.LoginFailed;
                 }
 
                 json = RequestHandler.RequestAccount(data);
             }
             catch
             {
-                return -2;
+                return AccountStatus.NoConnection;
             }
 
             SelectedAccount = Json.Deserialize<AccountInfo>(json);
@@ -68,7 +77,7 @@ namespace Aki.Launcher
 
             UpdateProfileInfo();
 
-            return 1;
+            return AccountStatus.OK;
         }
 
         public static void UpdateProfileInfo()
@@ -83,7 +92,24 @@ namespace Aki.Launcher
             }
         }
 
-        public static async Task<int> RegisterAsync(string username, string password, string edition)
+        public static ServerProfileInfo[] GetExistingProfiles()
+        {
+            string profileJsonArray = RequestHandler.RequestExistingProfiles();
+
+            if(profileJsonArray != null)
+            {
+                ServerProfileInfo[] miniProfiles = Json.Deserialize<ServerProfileInfo[]>(profileJsonArray);
+
+                if (miniProfiles != null && miniProfiles.Length > 0)
+                {
+                    return miniProfiles;
+                }
+            }
+
+            return new ServerProfileInfo[0];
+        }
+
+        public static async Task<AccountStatus> RegisterAsync(string username, string password, string edition)
         {
             return await Task.Run(() =>
             {
@@ -91,7 +117,7 @@ namespace Aki.Launcher
             });
         }
 
-        public static int Register(string username, string password, string edition)
+        public static AccountStatus Register(string username, string password, string edition)
         {
             RegisterRequestData data = new RegisterRequestData(username, password, edition);
             string registerStatus = STATUS_FAILED;
@@ -102,33 +128,19 @@ namespace Aki.Launcher
 
                 if (registerStatus != STATUS_OK)
                 {
-                    return -1;
+                    return AccountStatus.RegisterFailed;
                 }
             }
             catch
             {
-                return -2;
+                return AccountStatus.NoConnection;
             }
 
-            int loginStatus = Login(username, password);
-
-            if (loginStatus != 1)
-            {
-                switch (loginStatus)
-                {
-                    case -1:
-                        return -3;
-
-                    case -2:
-                        return -2;
-                }
-            }
-
-            return 1;
+            return Login(username, password);
         }
 
         //only added incase wanted for future use.
-        public static async Task<int> RemoveAsync()
+        public static async Task<AccountStatus> RemoveAsync()
         {
             return await Task.Run(() =>
             {
@@ -136,36 +148,32 @@ namespace Aki.Launcher
             });
         }
 
-        public static int Remove()
+        public static AccountStatus Remove()
         {
             LoginRequestData data = new LoginRequestData(SelectedAccount.username, SelectedAccount.password);
-            string json = STATUS_FAILED;
 
             try
             {
-                json = RequestHandler.RequestAccount(data);
+                string json = RequestHandler.RequestRemove(data);
 
-                if (json != STATUS_OK)
+                if(Json.Deserialize<bool>(json))
                 {
-                    return -1;
+                    SelectedAccount = null;
+
+                    return AccountStatus.OK;
+                }
+                else
+                {
+                    return AccountStatus.UpdateFailed;
                 }
             }
             catch
             {
-                return -1;
+                return AccountStatus.NoConnection;
             }
-
-            SelectedAccount = null;
-
-
-            // Left in for future, incase needed for reference
-            //launcherConfig.Username = "";
-            //launcherConfig.Password = "";
-            //JsonHandler.SaveLauncherConfig(launcherConfig);
-            return 1;
         }
 
-        public static async Task<int> ChangeUsernameAsync(string username)
+        public static async Task<AccountStatus> ChangeUsernameAsync(string username)
         {
             return await Task.Run(() =>
             {
@@ -173,7 +181,7 @@ namespace Aki.Launcher
             });
         }
 
-        public static int ChangeUsername(string username)
+        public static AccountStatus ChangeUsername(string username)
         {
             ChangeRequestData data = new ChangeRequestData(SelectedAccount.username, SelectedAccount.password, username);
             string json = STATUS_FAILED;
@@ -184,12 +192,12 @@ namespace Aki.Launcher
 
                 if (json != STATUS_OK)
                 {
-                    return -1;
+                    return AccountStatus.UpdateFailed;
                 }
             }
             catch
             {
-                return -2;
+                return AccountStatus.NoConnection;
             }
 
             ServerSetting DefaultServer = LauncherSettingsProvider.Instance.Server;
@@ -202,17 +210,17 @@ namespace Aki.Launcher
             SelectedAccount.username = username;
             LauncherSettingsProvider.Instance.SaveSettings();
 
-            return 1;
+            return AccountStatus.OK;
         }
 
-        public static async Task<int> ChangePasswordAsync(string password)
+        public static async Task<AccountStatus> ChangePasswordAsync(string password)
         {
             return await Task.Run(() =>
             {
                 return ChangePassword(password);
             });
         }
-        public static int ChangePassword(string password)
+        public static AccountStatus ChangePassword(string password)
         {
             ChangeRequestData data = new ChangeRequestData(SelectedAccount.username, SelectedAccount.password, password);
             string json = STATUS_FAILED;
@@ -223,12 +231,12 @@ namespace Aki.Launcher
 
                 if (json != STATUS_OK)
                 {
-                    return -1;
+                    return AccountStatus.UpdateFailed;
                 }
             }
             catch
             {
-                return -2;
+                return AccountStatus.NoConnection;
             }
 
             ServerSetting DefaultServer = LauncherSettingsProvider.Instance.Server;
@@ -241,17 +249,18 @@ namespace Aki.Launcher
             SelectedAccount.password = password;
             LauncherSettingsProvider.Instance.SaveSettings();
 
-            return 1;
+            return AccountStatus.OK;
         }
 
-        public static async Task<int> WipeAsync(string edition)
+        public static async Task<AccountStatus> WipeAsync(string edition)
         {
             return await Task.Run(() =>
             {
                 return Wipe(edition);
             });
         }
-        public static int Wipe(string edition)
+
+        public static AccountStatus Wipe(string edition)
         {
             RegisterRequestData data = new RegisterRequestData(SelectedAccount.username, SelectedAccount.password, edition);
             string json = STATUS_FAILED;
@@ -262,16 +271,16 @@ namespace Aki.Launcher
 
                 if (json != STATUS_OK)
                 {
-                    return -1;
+                    return AccountStatus.UpdateFailed;
                 }
             }
             catch
             {
-                return -2;
+                return AccountStatus.NoConnection;
             }
 
             SelectedAccount.edition = edition;
-            return 1;
+            return AccountStatus.OK;
         }
     }
 }
