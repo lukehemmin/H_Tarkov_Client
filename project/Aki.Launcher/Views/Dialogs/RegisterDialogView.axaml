@@ -14,14 +14,21 @@
     <TextBlock Text="{Binding Question}" Grid.ColumnSpan="2" FontSize="15"
                Foreground="{StaticResource AKI_Foreground_Light}"
                />
-    
-    <ComboBox Items="{Binding Editions.AvailableEditions}"
-              Margin="0 10"
-              Grid.Row="1" Grid.ColumnSpan="2"
-              HorizontalAlignment="Stretch"
-              SelectedItem="{Binding Editions.SelectedEdition}"
-              PlaceholderText="{Binding ComboBoxPlaceholderText}"
-              />
+
+	  <ComboBox Items="{Binding Editions.AvailableEditions}"
+		        Margin="0 10"
+				Grid.Row="1" Grid.ColumnSpan="2"
+				HorizontalAlignment="Stretch"
+				SelectedItem="{Binding Editions.SelectedEdition}"
+				PlaceholderText="{Binding ComboBoxPlaceholderText}"
+              >
+		  <ComboBox.ItemTemplate>
+			  <DataTemplate>
+			      <Label Background="Transparent" Content="{Binding Name}" ToolTip.Tip="{Binding Description}"/>
+			  </DataTemplate>
+		  </ComboBox.ItemTemplate>
+		  
+	  </ComboBox>
     
     <StackPanel Grid.Row="2" Grid.Column="1"
                 Orientation="Horizontal" Spacing="10"

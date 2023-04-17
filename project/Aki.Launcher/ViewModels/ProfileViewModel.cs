@@ -11,6 +11,7 @@ using Avalonia.Threading;
 using System.Reactive.Disposables;
 using System.Diagnostics;
 using System.IO;
+using Aki.Launcher.Models.Aki;
 
 namespace Aki.Launcher.ViewModels
 {
@@ -161,9 +162,9 @@ namespace Aki.Launcher.ViewModels
         {
             var result = await ShowDialog(new ChangeEditionDialogViewModel(null));
 
-            if(result != null && result is string edition)
+            if(result != null && result is AkiEdition edition)
             {
-                AccountStatus status = await AccountManager.WipeAsync(edition);
+                AccountStatus status = await AccountManager.WipeAsync(edition.Name);
 
                 switch (status)
                 {

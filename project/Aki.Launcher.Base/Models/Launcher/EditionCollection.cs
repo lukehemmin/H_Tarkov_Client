@@ -7,6 +7,7 @@
  */
 
 
+using Aki.Launcher.Models.Aki;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -41,8 +42,8 @@ namespace Aki.Launcher.Models.Launcher
             }
         }
 
-        private string _SelectedEdition;
-        public string SelectedEdition
+        private AkiEdition _SelectedEdition;
+        public AkiEdition SelectedEdition
         {
             get => _SelectedEdition;
             set
@@ -55,11 +56,16 @@ namespace Aki.Launcher.Models.Launcher
                 }
             }
         }
-        public ObservableCollection<string> AvailableEditions { get; private set; } = new ObservableCollection<string>(ServerManager.SelectedServer.editions);
+        public ObservableCollection<AkiEdition> AvailableEditions { get; private set; } = new ObservableCollection<AkiEdition>();
 
         public EditionCollection()
         {
             SelectedEditionIndex = 0;
+
+            foreach(var edition in ServerManager.SelectedServer.editions)
+            {
+                AvailableEditions.Add(new AkiEdition(edition));
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

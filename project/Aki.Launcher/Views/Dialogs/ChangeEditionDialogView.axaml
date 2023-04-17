@@ -15,11 +15,17 @@
            Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance}, Path=wipe_warning}"
            Foreground="IndianRed"
            />
-    <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-              Items="{Binding editions.AvailableEditions}"
-              SelectedItem="{Binding editions.SelectedEdition}"
-              PlaceholderText="{Binding Source={x:Static helpers:LocalizationProvider.Instance}, Path=select_edition}"
-              />
+	  <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+				Items="{Binding editions.AvailableEditions}"
+				SelectedItem="{Binding editions.SelectedEdition}"
+				PlaceholderText="{Binding Source={x:Static helpers:LocalizationProvider.Instance}, Path=select_edition}"
+              >
+		  <ComboBox.ItemTemplate>
+			  <DataTemplate>
+				  <Label Background="Transparent" Content="{Binding Name}" ToolTip.Tip="{Binding Description}"/>
+			  </DataTemplate>
+		  </ComboBox.ItemTemplate>
+	  </ComboBox>
 
     <StackPanel Spacing="10" Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
       <Button Content="{Binding Source={x:Static helpers:LocalizationProvider.Instance}, Path=update}"

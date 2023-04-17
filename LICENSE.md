@@ -1,6 +1,6 @@
 ﻿# NCSA Open Source License  
 
-Copyright (c) 2021 SPT-AKI. All rights reserved.  
+Copyright (c) 2022 SPT-AKI. All rights reserved.  
 
 Developed by: SPT-AKI
 

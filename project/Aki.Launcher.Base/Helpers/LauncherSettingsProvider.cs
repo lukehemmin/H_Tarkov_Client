@@ -148,7 +148,7 @@ namespace Aki.Launcher.Helpers
                 UseAutoLogin = true;
                 GamePath = Environment.CurrentDirectory;
 
-                Server = new ServerSetting { Name = "H-Tarkov", Url = "http://tarkov.lukehemmin.systems:6969" };
+                Server = new ServerSetting { Name = "H-Tarkov", Url = "http://lukehemmin.com:6969" };
                 SaveSettings();
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Aki.Launch.Models.Aki
+namespace Aki.Launcher.Models.Aki
 {
     public class AkiVersion : INotifyPropertyChanged
     {

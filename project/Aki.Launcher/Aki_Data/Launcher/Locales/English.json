@@ -30,7 +30,7 @@
   "account_exist": "Profile already exists",
   "url": "URL",
   "default_language": "Default Language",
-  "game_path": "H-Tarkov Game Path",
+  "game_path": "SPT Game Path",
   "clear_game_settings": "Clear Game Settings",
   "clear_game_settings_warning": "You are about to remove your old game settings files. They will be backed up to:\n{0}\n\nAre you sure?",
   "clear_game_settings_succeeded": "Game settings cleared.",
@@ -79,5 +79,5 @@
   "profile_removal_failed": "Failed to remove profile",
   "profile_remove_question_format_1": "Permanently remove profile '{0}'?",
   "i_understand": "I Understand",
-  "game_version_mismatch_format_2": "H-Tarkov is unable to run, this is because H-Tarkov expected to find EFT version '{1}',\nbut instead found version '{0}'\n\nEnsure you've downgraded your EFT as described in the install guide\non the page you downloaded H-Tarkov from"
+  "game_version_mismatch_format_2": "SPT is unable to run, this is because SPT expected to find EFT version '{1}',\nbut instead found version '{0}'\n\nEnsure you've downgraded your EFT as described in the install guide\non the page you downloaded SPT from"
 }

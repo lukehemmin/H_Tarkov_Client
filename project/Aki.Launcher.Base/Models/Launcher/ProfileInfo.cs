@@ -6,7 +6,6 @@
  * waffle.lord
  */
 
-using Aki.Launch.Models.Aki;
 using Aki.Launcher.Helpers;
 using Aki.Launcher.MiniCommon;
 using Aki.Launcher.Models.Aki;

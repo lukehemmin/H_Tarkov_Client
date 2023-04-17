@@ -33,7 +33,7 @@
 
 	<Grid RowDefinitions="AUTO,AUTO,*">
 
-		<cc:TitleBar Title="H-Tarkov Launcher"
+		<cc:TitleBar Title="HTarkov Launcher"
 				     XButtonCommand="{Binding CloseCommand}"
 					 MinButtonCommand="{Binding MinimizeCommand}"
 					 SettingsButtonCommand="{Binding GoToSettingsCommand}"

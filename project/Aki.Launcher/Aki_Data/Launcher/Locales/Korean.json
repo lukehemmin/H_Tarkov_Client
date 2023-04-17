@@ -30,7 +30,7 @@
   "account_exist": "프로필이 이미 존재합니다",
   "url": "URL",
   "default_language": "기본 언어",
-  "game_path": "H-Tarkov 게임 경로",
+  "game_path": "SPT 게임 경로",
   "clear_game_settings": "게임 설정 초기화",
   "clear_game_settings_warning": "기존 게임의 설정 파일을 초기화 합니다. 기존 파일들은\n{0}\n\n위치에 백업됩니다. 초기화하시겠습니까?",
   "clear_game_settings_succeeded": "게임 설정이 초기화되었습니다.",

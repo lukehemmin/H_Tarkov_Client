@@ -50,9 +50,9 @@ namespace Aki.Launcher.ViewModels
                             {
                                 var result = await ShowDialog(new RegisterDialogViewModel(null, Login.Username));
 
-                                if (result != null && result is string edition)
+                                if (result != null && result is AkiEdition edition)
                                 {
-                                    AccountStatus registerResult = await AccountManager.RegisterAsync(Login.Username, Login.Password, edition);
+                                    AccountStatus registerResult = await AccountManager.RegisterAsync(Login.Username, Login.Password, edition.Name);
 
                                     switch (registerResult)
                                     {

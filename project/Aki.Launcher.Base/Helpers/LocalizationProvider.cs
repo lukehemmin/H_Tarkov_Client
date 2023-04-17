@@ -169,7 +169,7 @@ namespace Aki.Launcher.Helpers
             englishLocale.profile_removal_failed = "Failed to remove profile";
             englishLocale.profile_remove_question_format_1 = "Permanently remove profile '{0}'?";
             englishLocale.i_understand = "I Understand";
-            englishLocale.game_version_mismatch_format_2 = "H-Tarkov is unable to run, this is because H-Tarkov expected to find EFT version '{1}',\nbut instead found version '{0}'\n\nEnsure you've downgraded your EFT as described in the install guide\non the page you downloaded H-Tarkov from";
+            englishLocale.game_version_mismatch_format_2 = "SPT is unable to run, this is because SPT expected to find EFT version '{1}',\nbut instead found version '{0}'\n\nEnsure you've downgraded your EFT as described in the install guide\non the page you downloaded SPT from";
             #endregion
 
             Directory.CreateDirectory(LocalizationProvider.DefaultLocaleFolderPath);

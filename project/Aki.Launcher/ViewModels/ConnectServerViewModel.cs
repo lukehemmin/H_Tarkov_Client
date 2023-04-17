@@ -1,4 +1,4 @@
-﻿using Aki.Launch.Models.Aki;
+﻿using Aki.Launcher.Models.Aki;
 using Aki.Launcher.Helpers;
 using Aki.Launcher.Models.Launcher;
 using ReactiveUI;

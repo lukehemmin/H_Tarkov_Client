@@ -16,7 +16,7 @@ namespace Aki.Launcher
 
         public ClientConfig()
         {
-            BackendUrl = "http://tarkov.lukehemmin.systems:6969";
+            BackendUrl = "http://lukehemmin.com:6969";
             Version = "live";
         }
 

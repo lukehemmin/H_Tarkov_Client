@@ -7,6 +7,8 @@
  */
 
 
+using System.Collections.Generic;
+
 namespace Aki.Launcher
 {
     public class ServerInfo
@@ -14,12 +16,14 @@ namespace Aki.Launcher
         public string backendUrl;
         public string name;
         public string[] editions;
+        public Dictionary<string, string> profileDescriptions;
 
         public ServerInfo()
         {
-            backendUrl = "http://tarkov.lukehemmin.systems:6969";
-            name = "Local H-Tarkov Server";
+            backendUrl = "http://lukehemmin.com:6969";
+            name = "Local SPT-AKI Server";
             editions = new string[0];
+            profileDescriptions = new Dictionary<string, string>();
         }
     }
 }

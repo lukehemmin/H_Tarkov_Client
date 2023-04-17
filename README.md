@@ -1,12 +1,35 @@
-# H_Tarkov_Client
-Escape From Tarkov SinglePlayer Based on SPTarkov.
+# Launcher
 
-There is a separate author. Please check the license.
+Custom launcher for Escape From Tarkov to start the game in offline mode
 
-Buy the genuine Escape From Tarkov and use it. Reproduced version of Tarkov users are not allowed.
+**Project**        | **Function**
+------------------ | --------------------------------------------
+Aki.Build          | Build script
+Aki.ByteBanger     | Assembly-CSharp.dll patcher
+Aki.Launcher       | Launcher frontend
+Aki.Launcher.Base  | Launcher backend
+
+## Privacy
+SPT is an open source project. Your commit credentials as author of a commit will be visible by anyone. Please make sure you understand this before submitting a PR.
+Feel free to use a "fake" username and email on your commits by using the following commands:
+```bash
+git config --local user.name "USERNAME"
+git config --local user.email "USERNAME@SOMETHING.com"
+```
 
 ## Requirements
 
-- Escape From Tarkov 0.12.12.11.16440
-- Visual Studio Build Tools (.NET desktop workload)
-- .NET 5.0.10
+- Escape From Tarkov 19765
+- .NET 6 SDK
+- Visual Studio Code
+
+### For UI Development
+
+- Visual Studio Community 2022 (.NET desktop workload)
+- Avalonia Visual Studio Extension
+
+## Build
+
+1. Open Launcher.code-workspace in Visual Studio Code.
+2. Run the build task: (top toolbar) Terminal -> Run Build Task...
+3. Copy-paste all files inside `Build` into `game root directory`, overwrite when prompted.

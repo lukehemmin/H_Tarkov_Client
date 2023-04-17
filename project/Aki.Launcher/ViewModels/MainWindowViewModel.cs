@@ -5,7 +5,7 @@ using Aki.Launcher.Models;
 using Aki.Launcher.MiniCommon;
 using System.IO;
 using Splat;
-using Aki.Launch.Models.Aki;
+using Aki.Launcher.Models.Aki;
 using Aki.Launcher.Helpers;
 
 namespace Aki.Launcher.ViewModels
